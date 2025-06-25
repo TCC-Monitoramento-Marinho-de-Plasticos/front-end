@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
 interface UploadSectionProps {
-  onImageSelected: (imageUrl: string) => void;
+  onImageSelected: (file: File) => void;
 }
 
 const UploadSection: React.FC<UploadSectionProps> = ({ onImageSelected }) => {
@@ -15,23 +15,21 @@ const UploadSection: React.FC<UploadSectionProps> = ({ onImageSelected }) => {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles?.length) {
       const file = acceptedFiles[0];
-      
-      // Check file type
+
       if (!file.type.startsWith('image/')) {
         toast.error('Please upload an image file');
         return;
       }
-      
-      // Check file size (5MB max)
+
       if (file.size > 5 * 1024 * 1024) {
         toast.error('Image size should be less than 5MB');
         return;
       }
-      
+
       const previewUrl = URL.createObjectURL(file);
       setPreview(previewUrl);
-      onImageSelected(previewUrl);
-      
+      onImageSelected(file); // ✅ envia o File corretamente
+
       toast.success('Image uploaded successfully!');
     }
   }, [onImageSelected]);
@@ -68,12 +66,8 @@ const UploadSection: React.FC<UploadSectionProps> = ({ onImageSelected }) => {
           onMouseLeave={() => setIsHovering(false)}
         >
           <input {...getInputProps()} />
-          
           <motion.div
-            animate={{ 
-              y: isDragActive ? -10 : 0,
-              scale: isDragActive ? 1.05 : 1
-            }}
+            animate={{ y: isDragActive ? -10 : 0, scale: isDragActive ? 1.05 : 1 }}
             transition={{ duration: 0.2 }}
             className="text-center"
           >
