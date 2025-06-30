@@ -22,7 +22,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, isLoading }) =>
             <div className="h-full bg-ocean-500 rounded-full w-1/2 animate-wave"></div>
           </div>
         </div>
-        <p className="mt-4 text-ocean-700 dark:text-ocean-300 font-medium">Analyzing image...</p>
+        <p className="mt-4 text-ocean-700 dark:text-ocean-300 font-medium">Analizando imagem...</p>
       </div>
     );
   }
@@ -96,10 +96,10 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, isLoading }) =>
                 </div>
                 <div>
                   <h3 className="font-heading font-bold text-xl text-ocean-800 dark:text-white">
-                    {result.plasticDetected ? 'Plastic Detected' : 'No Plastic Detected'}
+                    {result.plasticDetected ? 'Plástico Detectado' : 'Nenhum Plástico Detectado'}
                   </h3>
                   <p className="text-ocean-600 dark:text-ocean-400">
-                    Confidence: {(result.confidence * 100).toFixed(1)}%
+                    Confiança: {(result.confidence * 100).toFixed(1)}%
                   </p>
                 </div>
               </div>

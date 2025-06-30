@@ -44,7 +44,7 @@ const Gallery: React.FC<GalleryProps> = ({ results, onSelect }) => {
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-ocean-900/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
                   <p className="text-white text-xs font-medium">
-                    {result.plasticDetected ? 'Plastic detected' : 'No plastic found'}
+                    {result.plasticDetected ? 'Plástico Detectado' : 'Nenhum plástico encontrado'}
                   </p>
                 </div>
               </div>
