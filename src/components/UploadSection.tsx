@@ -74,17 +74,17 @@ const UploadSection: React.FC<UploadSectionProps> = ({ onImageSelected }) => {
             {isDragActive ? (
               <div className="text-ocean-600 dark:text-ocean-400">
                 <ImageIcon size={48} className="mx-auto mb-4" strokeWidth={1.5} />
-                <p className="text-xl font-heading font-medium mb-1">Drop your image here</p>
+                <p className="text-xl font-heading font-medium mb-1">Solte sua imagem aqui</p>
                 <p className="text-sm text-ocean-500 dark:text-ocean-300">
-                  We'll analyze it for plastic pollution
+                  Vamos analisá-la para detecção de poluição plástica.
                 </p>
               </div>
             ) : (
               <div className="text-ocean-700 dark:text-ocean-300">
                 <Upload size={40} className="mx-auto mb-4" strokeWidth={1.5} />
-                <p className="text-xl font-heading font-medium mb-1">Upload an underwater image</p>
+                <p className="text-xl font-heading font-medium mb-1">Carregue uma Imagem</p>
                 <p className="text-sm text-ocean-500 dark:text-ocean-400 max-w-xs mx-auto">
-                  Drag and drop or click to select an image to analyze for plastic pollution
+                  Arraste e solte ou clique para selecionar uma imagem para analisar.
                 </p>
               </div>
             )}

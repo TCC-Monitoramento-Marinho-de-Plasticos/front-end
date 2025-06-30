@@ -6,23 +6,23 @@ const InfoSection: React.FC = () => {
   const infoItems = [
     {
       icon: <Fish className="w-10 h-10 text-ocean-500" />,
-      title: "Marine Life Impact",
-      description: "Plastic pollution harms countless marine species through entanglement and ingestion."
+      title: "Impacto na Vida Marinha",
+      description: "A poluição plástica prejudica inúmeras espécies marinhas por meio de emaranhamento e ingestão."
     },
     {
       icon: <Droplets className="w-10 h-10 text-ocean-500" />,
-      title: "Water Quality",
-      description: "Microplastics contaminate our water sources and can enter the human food chain."
+      title: "Qualidade da Água",
+      description: "Microplásticos contaminam nossas fontes de água e podem entrar na cadeia alimentar humana."
     },
     {
       icon: <CloudRain className="w-10 h-10 text-ocean-500" />,
-      title: "Ecosystem Disruption",
-      description: "Pollution disrupts delicate ocean ecosystems and coral reefs worldwide."
+      title: "Perturbação do Ecossistema",
+      description: "A poluição perturba ecossistemas oceânicos delicados e recifes de coral em todo o mundo."
     },
     {
       icon: <TreePine className="w-10 h-10 text-ocean-500" />,
-      title: "Conservation Efforts",
-      description: "Identifying pollution hotspots helps target cleanup and prevention efforts."
+      title: "Esforços de Conservação",
+      description: "Identificar pontos críticos de poluição ajuda a direcionar esforços de limpeza e prevenção."
     }
   ];
 
@@ -56,10 +56,10 @@ const InfoSection: React.FC = () => {
           className="text-center max-w-3xl mx-auto mb-12"
         >
           <h2 className="text-3xl md:text-4xl font-heading font-bold text-ocean-800 dark:text-white mb-4">
-            Why Ocean Protection Matters
+            Por que a Proteção dos Oceanos é Importante
           </h2>
           <p className="text-ocean-600 dark:text-ocean-300">
-            Plastic pollution poses a serious threat to marine ecosystems worldwide. Understanding and identifying this pollution is the first step to effective action.
+            A poluição plástica representa uma ameaça séria aos ecossistemas marinhos em todo o mundo. Compreender e identificar essa poluição é o primeiro passo para uma ação eficaz.
           </p>
         </motion.div>
 

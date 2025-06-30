@@ -19,7 +19,7 @@ const Header: React.FC = () => {
               Ocean Guardian
             </h1>
             <p className="text-xs text-ocean-600 dark:text-ocean-400 font-medium">
-              Plastic Pollution Detection
+              Detecção de Poluição Plástica
             </p>
           </div>
         </div>

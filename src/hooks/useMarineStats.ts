@@ -9,21 +9,21 @@ export const useMarineStats = () => {
     const marineStats: MarineStat[] = [
       {
         id: 1,
-        title: "8 million tons of plastic enter oceans annually",
-        description: "That's equivalent to dumping a garbage truck of plastic into the ocean every minute.",
-        value: "8M tons"
+        title: "8 milhões de toneladas de plástico entram nos oceanos anualmente.",
+        description: "Isso equivale a despejar um caminhão de lixo plástico no oceano a cada minuto.",
+        value: "8M toneladas"
       },
       {
         id: 2,
-        title: "Over 5 trillion plastic pieces pollute our oceans",
-        description: "These pieces weigh over 250,000 tons and threaten marine life worldwide.",
-        value: "5T+ pieces"
+        title: "Mais de 5 trilhões de pedaços de plástico poluem nossos oceanos",
+        description: "Esses pedaços pesam mais de 250.000 toneladas e ameaçam a vida marinha em todo o mundo.",
+        value: "5T+ pedaços"
       },
       {
         id: 3,
-        title: "700+ marine species affected by plastic pollution",
-        description: "From the smallest plankton to the largest whales, plastic pollution impacts marine life.",
-        value: "700+ species"
+        title: "700+ espécies marinhas afetadas pela poluição plástica",
+        description: "Desde o menor plâncton até as maiores baleias, a poluição plástica impacta a vida marinha.",
+        value: "700+ espécies"
       }
     ];
     

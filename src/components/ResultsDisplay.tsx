@@ -42,14 +42,14 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, isLoading }) =>
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-heading font-bold text-ocean-800 dark:text-white">
-              Analysis Results
+              Resultados da Análise
             </h2>
             <button
               className="flex items-center px-4 py-2 text-sm rounded-lg bg-ocean-100 dark:bg-ocean-700 text-ocean-600 dark:text-ocean-300 hover:bg-ocean-200 dark:hover:bg-ocean-600 transition-colors"
               aria-label="Share results"
             >
               <Share2 size={16} className="mr-2" />
-              Share
+              Compartilhar
             </button>
           </div>
 
@@ -106,12 +106,12 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, isLoading }) =>
 
               <div className="bg-ocean-50 dark:bg-ocean-700/30 p-4 rounded-lg mb-6">
                 <h4 className="font-heading font-medium text-ocean-700 dark:text-ocean-300 mb-2">
-                  Analysis Summary
+                  Resumo da Análise
                 </h4>
                 <p className="text-ocean-600 dark:text-ocean-400 text-sm">
                   {result.plasticDetected
-                    ? 'Our system has identified potential plastic pollution in this underwater image. The highlighted areas show where plastic debris may be present. This type of pollution poses significant threats to marine ecosystems.'
-                    : 'This underwater environment appears to be free from visible plastic pollution. Healthy marine ecosystems are vital for ocean biodiversity and planetary health.'}
+                    ? 'Nosso sistema identificou uma possível poluição plástica nesta imagem. As áreas destacadas mostram onde os detritos plásticos podem estar presentes. Esse tipo de poluição representa ameaças significativas aos ecossistemas marinhos.'
+                    : 'Este ambiente parece estar livre de poluição plástica visível. Ecossistemas marinhos saudáveis são vitais para a biodiversidade oceânica e a saúde do planeta.'}
                 </p>
               </div>
 

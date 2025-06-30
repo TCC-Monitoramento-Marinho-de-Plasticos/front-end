@@ -38,7 +38,7 @@ function App() {
         <section id="upload" className="py-16">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-heading font-bold text-center text-ocean-800 dark:text-white mb-8">
-              Upload an Underwater Image
+              Carregue uma Imagem
             </h2>
             <UploadSection onImageSelected={handleImageSelected} />
             <ResultsDisplay 

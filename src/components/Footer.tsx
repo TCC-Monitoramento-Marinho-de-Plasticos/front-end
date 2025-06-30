@@ -11,8 +11,7 @@ const Footer: React.FC = () => {
               <h3 className="text-xl font-heading font-bold">Ocean Guardian</h3>
             </div>
             <p className="text-ocean-200 text-sm text-center md:text-left max-w-md">
-              Helping to identify and combat plastic pollution in our oceans 
-              through advanced image recognition technology.
+              Ajudando a identificar e combater a poluição plástica em nossos oceanos através de tecnologia avançada de reconhecimento de imagem.
             </p>
           </div>
           
@@ -28,7 +27,7 @@ const Footer: React.FC = () => {
                 </a>
               </div>
               <p className="text-ocean-300 text-sm flex items-center">
-                Made with <Heart size={14} className="mx-1 text-coral-500" /> for our oceans
+                Feito com <Heart size={14} className="mx-1 text-coral-500" /> pelos nossos oceanos
               </p>
             </div>
           </div>
@@ -36,7 +35,7 @@ const Footer: React.FC = () => {
         
         <div className="mt-8 pt-6 border-t border-ocean-700">
           <p className="text-center text-ocean-400 text-sm">
-            © {new Date().getFullYear()} Ocean Guardian. All rights reserved.
+            © {new Date().getFullYear()} Ocean Guardian. Todos os direitos reservados.
           </p>
         </div>
       </div>
