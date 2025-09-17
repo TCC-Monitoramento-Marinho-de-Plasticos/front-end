@@ -14,7 +14,7 @@ const Hero: React.FC = () => {
             className="inline-flex items-center bg-ocean-100/80 dark:bg-ocean-800/50 backdrop-blur-sm text-ocean-600 dark:text-ocean-300 rounded-full px-4 py-2 mb-6"
           >
             <Droplets size={20} className="mr-2" />
-            <span className="text-sm font-medium">Detecção de Poluição Marinha por IA</span>
+            <span className="text-sm font-medium">Detecção de Poluição Marinha com IA</span>
           </motion.div>
           
           <motion.h1 
@@ -23,7 +23,7 @@ const Hero: React.FC = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-ocean-900 dark:text-white mb-6 leading-tight"
           >
-            Detecção de Poluição Plástica em Nossos Oceanos
+            Detecte Poluição Plástica em Nossos Oceanos
           </motion.h1>
           
           <motion.p 
@@ -32,7 +32,7 @@ const Hero: React.FC = () => {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="text-lg text-ocean-700 dark:text-ocean-300 mb-8 max-w-2xl mx-auto"
           >
-            Faça o upload de imagens para identificar a poluição plástica com nossa tecnologia avançada. Ajude a proteger nossos oceanos contribuindo para a pesquisa sobre poluição marinha.
+            Envie imagens submarinas para identificar poluição plástica com nossa tecnologia avançada de detecção. Ajude a proteger nossos oceanos contribuindo para a pesquisa de poluição marinha.
           </motion.p>
           
           <motion.div 
@@ -66,7 +66,6 @@ const Hero: React.FC = () => {
         </div>
       </div>
       
-      {/* Background gradient */}
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-ocean-50/80 to-white/30 dark:from-ocean-900/50 dark:to-ocean-950/80" />
     </section>
   );

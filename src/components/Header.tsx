@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTheme } from '../context/ThemeContext';
-import { Moon, Sun, Droplets } from 'lucide-react';
+import { Moon, Sun, Droplets, Globe } from 'lucide-react';
 
 const Header: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
@@ -25,10 +25,25 @@ const Header: React.FC = () => {
         </div>
         
         <div className="flex items-center space-x-4">
+          <nav className="hidden md:flex items-center space-x-6 mr-4">
+            <a 
+              href="/" 
+              className="text-ocean-600 dark:text-ocean-300 hover:text-ocean-800 dark:hover:text-white transition-colors font-medium"
+            >
+              Início
+            </a>
+            <a 
+              href="/dashboard" 
+              className="text-ocean-600 dark:text-ocean-300 hover:text-ocean-800 dark:hover:text-white transition-colors font-medium flex items-center"
+            >
+              <Globe size={16} className="mr-1" />
+              Painel 3D
+            </a>
+          </nav>
           <button 
             onClick={toggleTheme}
             className="p-2 rounded-full bg-ocean-100 dark:bg-ocean-700 text-ocean-600 dark:text-ocean-300 hover:bg-ocean-200 dark:hover:bg-ocean-600 transition-colors"
-            aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+            aria-label={theme === 'light' ? 'Ativar modo escuro' : 'Ativar modo claro'}
           >
             {theme === 'light' ? (
               <Moon size={20} />

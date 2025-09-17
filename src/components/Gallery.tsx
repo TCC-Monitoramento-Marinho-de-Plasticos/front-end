@@ -15,7 +15,7 @@ const Gallery: React.FC<GalleryProps> = ({ results, onSelect }) => {
     <section className="py-12">
       <div className="container mx-auto px-4">
         <h2 className="text-2xl font-heading font-bold text-ocean-800 dark:text-white mb-6">
-          Análises Recentes
+          Recent Analyses
         </h2>
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -44,7 +44,7 @@ const Gallery: React.FC<GalleryProps> = ({ results, onSelect }) => {
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-ocean-900/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
                   <p className="text-white text-xs font-medium">
-                    {result.plasticDetected ? 'Plástico Detectado' : 'Nenhum plástico encontrado'}
+                    {result.plasticDetected ? 'Plastic detected' : 'No plastic found'}
                   </p>
                 </div>
               </div>

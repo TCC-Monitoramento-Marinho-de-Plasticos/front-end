@@ -11,7 +11,8 @@ const Footer: React.FC = () => {
               <h3 className="text-xl font-heading font-bold">Ocean Guardian</h3>
             </div>
             <p className="text-ocean-200 text-sm text-center md:text-left max-w-md">
-              Ajudando a identificar e combater a poluição plástica em nossos oceanos através de tecnologia avançada de reconhecimento de imagem.
+              Ajudando a identificar e combater a poluição plástica em nossos oceanos 
+              através de tecnologia avançada de reconhecimento de imagem.
             </p>
           </div>
           

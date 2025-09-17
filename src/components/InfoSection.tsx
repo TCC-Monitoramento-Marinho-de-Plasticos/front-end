@@ -7,7 +7,7 @@ const InfoSection: React.FC = () => {
     {
       icon: <Fish className="w-10 h-10 text-ocean-500" />,
       title: "Impacto na Vida Marinha",
-      description: "A poluição plástica prejudica inúmeras espécies marinhas por meio de emaranhamento e ingestão."
+      description: "A poluição plástica prejudica inúmeras espécies marinhas através de emaranhamento e ingestão."
     },
     {
       icon: <Droplets className="w-10 h-10 text-ocean-500" />,
@@ -59,7 +59,7 @@ const InfoSection: React.FC = () => {
             Por que a Proteção dos Oceanos é Importante
           </h2>
           <p className="text-ocean-600 dark:text-ocean-300">
-            A poluição plástica representa uma ameaça séria aos ecossistemas marinhos em todo o mundo. Compreender e identificar essa poluição é o primeiro passo para uma ação eficaz.
+            A poluição plástica representa uma séria ameaça aos ecossistemas marinhos em todo o mundo. Compreender e identificar essa poluição é o primeiro passo para uma ação efetiva.
           </p>
         </motion.div>
 
