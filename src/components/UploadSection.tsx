@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
 interface UploadSectionProps {
-  onImageSelected: (file: File) => void;
+  onImageSelected: (imageUrl: string) => void;
 }
 
 const UploadSection: React.FC<UploadSectionProps> = ({ onImageSelected }) => {
@@ -15,22 +15,24 @@ const UploadSection: React.FC<UploadSectionProps> = ({ onImageSelected }) => {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles?.length) {
       const file = acceptedFiles[0];
-
+      
+      // Check file type
       if (!file.type.startsWith('image/')) {
-        toast.error('Please upload an image file');
+        toast.error('Por favor, envie um arquivo de imagem');
         return;
       }
-
+      
+      // Check file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('Image size should be less than 5MB');
+        toast.error('O tamanho da imagem deve ser menor que 5MB');
         return;
       }
-
+      
       const previewUrl = URL.createObjectURL(file);
       setPreview(previewUrl);
-      onImageSelected(file); // ✅ envia o File corretamente
-
-      toast.success('Image uploaded successfully!');
+      onImageSelected(previewUrl);
+      
+      toast.success('Imagem enviada com sucesso!');
     }
   }, [onImageSelected]);
 
@@ -66,8 +68,12 @@ const UploadSection: React.FC<UploadSectionProps> = ({ onImageSelected }) => {
           onMouseLeave={() => setIsHovering(false)}
         >
           <input {...getInputProps()} />
+          
           <motion.div
-            animate={{ y: isDragActive ? -10 : 0, scale: isDragActive ? 1.05 : 1 }}
+            animate={{ 
+              y: isDragActive ? -10 : 0,
+              scale: isDragActive ? 1.05 : 1
+            }}
             transition={{ duration: 0.2 }}
             className="text-center"
           >
@@ -76,15 +82,15 @@ const UploadSection: React.FC<UploadSectionProps> = ({ onImageSelected }) => {
                 <ImageIcon size={48} className="mx-auto mb-4" strokeWidth={1.5} />
                 <p className="text-xl font-heading font-medium mb-1">Solte sua imagem aqui</p>
                 <p className="text-sm text-ocean-500 dark:text-ocean-300">
-                  Vamos analisá-la para detecção de poluição plástica.
+                  Vamos analisá-la para detectar poluição plástica
                 </p>
               </div>
             ) : (
               <div className="text-ocean-700 dark:text-ocean-300">
                 <Upload size={40} className="mx-auto mb-4" strokeWidth={1.5} />
-                <p className="text-xl font-heading font-medium mb-1">Carregue uma Imagem</p>
+                <p className="text-xl font-heading font-medium mb-1">Envie uma imagem submarina</p>
                 <p className="text-sm text-ocean-500 dark:text-ocean-400 max-w-xs mx-auto">
-                  Arraste e solte ou clique para selecionar uma imagem para analisar.
+                  Arraste e solte ou clique para selecionar uma imagem para análise de poluição plástica
                 </p>
               </div>
             )}
@@ -96,7 +102,7 @@ const UploadSection: React.FC<UploadSectionProps> = ({ onImageSelected }) => {
             animate={{ opacity: isHovering || isDragActive ? 1 : 0 }}
             transition={{ duration: 0.2 }}
           >
-            <Info size={12} className="mr-1" /> JPG, PNG, WebP up to 5MB
+            <Info size={12} className="mr-1" /> JPG, PNG, WebP até 5MB
           </motion.div>
         </motion.div>
       ) : (
@@ -108,13 +114,13 @@ const UploadSection: React.FC<UploadSectionProps> = ({ onImageSelected }) => {
         >
           <img 
             src={preview} 
-            alt="Preview" 
+            alt="Pré-visualização" 
             className="w-full h-auto object-cover rounded-xl" 
           />
           <button
             onClick={removeImage}
             className="absolute top-2 right-2 bg-ocean-900/60 text-white p-1 rounded-full hover:bg-ocean-700 transition-colors"
-            aria-label="Remove image"
+            aria-label="Remover imagem"
           >
             <XCircle size={24} />
           </button>

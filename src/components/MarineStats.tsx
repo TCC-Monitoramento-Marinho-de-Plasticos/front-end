@@ -9,7 +9,7 @@ const MarineStats: React.FC = () => {
   return (
     <div className="bg-ocean-50 dark:bg-ocean-700/30 rounded-lg p-4">
       <h4 className="font-heading font-medium text-ocean-700 dark:text-ocean-300 mb-3">
-        Fatos sobre a poluição marinha
+        Fatos sobre Poluição Oceânica
       </h4>
       
       <div className="space-y-3">
