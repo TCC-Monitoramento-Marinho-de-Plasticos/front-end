@@ -1,12 +1,13 @@
 export interface AnalysisResult {
   id: string;
   imageUrl: string;
+  classification: string;   // <- "SEM lixo" | "COM lixo"
   plasticDetected: boolean;
   confidence: number;
-  detectionAreas?: { x: number; y: number; width: number; height: number }[];
+  detectionAreas: any[];
   timestamp: Date;
   location?: string;
-  apiResponse?: any;
+  apiResponse: any;
 }
 
 export interface MarineStat {
