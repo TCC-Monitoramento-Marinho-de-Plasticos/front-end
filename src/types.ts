@@ -5,6 +5,8 @@ export interface AnalysisResult {
   confidence: number;
   detectionAreas?: { x: number; y: number; width: number; height: number }[];
   timestamp: Date;
+  location?: string;
+  apiResponse?: any;
 }
 
 export interface MarineStat {

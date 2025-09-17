@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { AlertTriangle, CheckCircle, Share2 } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Share2, MapPin } from 'lucide-react';
 import { AnalysisResult } from '../types';
 import MarineStats from './MarineStats';
 
@@ -101,6 +101,12 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, isLoading }) =>
                       ? `Confiança: ${(result.confidence * 100).toFixed(1)}%`
                       : 'Esta imagem parece estar livre de poluição'}
                   </p>
+                  {result.location && (
+                    <div className="flex items-center mt-1 text-sm text-ocean-500 dark:text-ocean-400">
+                      <MapPin size={14} className="mr-1" />
+                      <span>{result.location}</span>
+                    </div>
+                  )}
                 </div>
               </div>
               
