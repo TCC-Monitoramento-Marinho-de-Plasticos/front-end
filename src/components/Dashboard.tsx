@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { X, MapPin, Calendar, Package, Zap, Home, BarChart3, AlertTriangle, TrendingUp } from 'lucide-react';
+import { X, MapPin, Calendar, Package, Zap, Home, BarChart3, AlertTriangle, TrendingUp, Loader2 } from 'lucide-react';
 
 interface WasteReport {
   id: string;
@@ -16,9 +16,18 @@ interface LocationData {
   lat: number;
   lon: number;
   totalReports: number;
-  reports: WasteReport[];
+  reports?: WasteReport[];
   mostCommonType: string;
   typeDistribution: { [key: string]: number };
+}
+
+interface SummaryData {
+  totalReports: number;
+  totalLocations: number;
+  criticalArea: string;
+  reportsInCriticalArea: number;
+  mostCommonResidueType: string;
+  mostCommonResidueQuantity: number;
 }
 
 const Dashboard: React.FC = () => {
@@ -33,186 +42,76 @@ const Dashboard: React.FC = () => {
   const mouseRef = useRef<THREE.Vector2>();
   
   const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysis, setAnalysis] = useState<string>('');
+  const [locationData, setLocationData] = useState<LocationData[]>([]);
+  const [summaryData, setSummaryData] = useState<SummaryData | null>(null);
+  const [isLoadingLocations, setIsLoadingLocations] = useState(true);
+  const [isLoadingSummary, setIsLoadingSummary] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Dados simulados de relatos de resíduos costeiros (expandidos)
-  const wasteReports: WasteReport[] = [
-    // Rio de Janeiro - múltiplos relatos
-    {
-      id: 'RJ001',
-      lat: -22.9068,
-      lon: -43.1729,
-      type: 'Garrafas PET',
-      timestamp: '2024-01-15T10:30:00Z',
-      location: 'Rio de Janeiro, RJ'
-    },
-    {
-      id: 'RJ002',
-      lat: -22.9068,
-      lon: -43.1729,
-      type: 'Plásticos Descartáveis',
-      timestamp: '2024-01-14T14:20:00Z',
-      location: 'Rio de Janeiro, RJ'
-    },
-    {
-      id: 'RJ003',
-      lat: -22.9068,
-      lon: -43.1729,
-      type: 'Garrafas PET',
-      timestamp: '2024-01-13T09:15:00Z',
-      location: 'Rio de Janeiro, RJ'
-    },
-    {
-      id: 'RJ004',
-      lat: -22.9068,
-      lon: -43.1729,
-      type: 'Redes de Pesca',
-      timestamp: '2024-01-12T16:45:00Z',
-      location: 'Rio de Janeiro, RJ'
-    },
-    // Santos - múltiplos relatos
-    {
-      id: 'SP001',
-      lat: -23.9608,
-      lon: -46.3331,
-      type: 'Redes de Pesca',
-      timestamp: '2024-01-14T14:20:00Z',
-      location: 'Santos, SP'
-    },
-    {
-      id: 'SP002',
-      lat: -23.9608,
-      lon: -46.3331,
-      type: 'Redes de Pesca',
-      timestamp: '2024-01-13T11:30:00Z',
-      location: 'Santos, SP'
-    },
-    {
-      id: 'SP003',
-      lat: -23.9608,
-      lon: -46.3331,
-      type: 'Plásticos Descartáveis',
-      timestamp: '2024-01-12T08:45:00Z',
-      location: 'Santos, SP'
-    },
-    // Florianópolis
-    {
-      id: 'SC001',
-      lat: -27.5954,
-      lon: -48.5480,
-      type: 'Plásticos Descartáveis',
-      timestamp: '2024-01-13T09:15:00Z',
-      location: 'Florianópolis, SC'
-    },
-    {
-      id: 'SC002',
-      lat: -27.5954,
-      lon: -48.5480,
-      type: 'Microplásticos Visíveis',
-      timestamp: '2024-01-11T15:20:00Z',
-      location: 'Florianópolis, SC'
-    },
-    // São Luís
-    {
-      id: 'MA001',
-      lat: -2.5387,
-      lon: -44.2825,
-      type: 'Microplásticos Visíveis',
-      timestamp: '2024-01-12T16:45:00Z',
-      location: 'São Luís, MA'
-    },
-    // Paranaguá
-    {
-      id: 'PR001',
-      lat: -25.5163,
-      lon: -48.5108,
-      type: 'Outros',
-      timestamp: '2024-01-11T11:30:00Z',
-      location: 'Paranaguá, PR'
-    },
-    // Salvador
-    {
-      id: 'BA001',
-      lat: -12.9714,
-      lon: -38.5014,
-      type: 'Garrafas PET',
-      timestamp: '2024-01-10T13:20:00Z',
-      location: 'Salvador, BA'
-    },
-    {
-      id: 'BA002',
-      lat: -12.9714,
-      lon: -38.5014,
-      type: 'Plásticos Descartáveis',
-      timestamp: '2024-01-09T10:15:00Z',
-      location: 'Salvador, BA'
-    }
-  ];
-
-  // Agregar dados por localização
-  const locationData: LocationData[] = React.useMemo(() => {
-    const grouped = wasteReports.reduce((acc, report) => {
-      const key = report.location;
-      if (!acc[key]) {
-        acc[key] = {
-          location: report.location,
-          lat: report.lat,
-          lon: report.lon,
-          totalReports: 0,
-          reports: [],
-          mostCommonType: '',
-          typeDistribution: {}
-        };
-      }
-      
-      acc[key].totalReports++;
-      acc[key].reports.push(report);
-      
-      // Contar tipos
-      if (!acc[key].typeDistribution[report.type]) {
-        acc[key].typeDistribution[report.type] = 0;
-      }
-      acc[key].typeDistribution[report.type]++;
-      
-      return acc;
-    }, {} as { [key: string]: LocationData });
-
-    // Determinar tipo mais comum para cada localização
-    Object.values(grouped).forEach(location => {
-      let maxCount = 0;
-      let mostCommon = '';
-      
-      Object.entries(location.typeDistribution).forEach(([type, count]) => {
-        if (count > maxCount) {
-          maxCount = count;
-          mostCommon = type;
-        }
+  // Fetch locations data
+  const fetchLocations = async () => {
+    try {
+      setIsLoadingLocations(true);
+      const response = await fetch('http://localhost:8081/api/locations', {
+        method: 'GET'
       });
-      
-      location.mostCommonType = mostCommon;
-    });
 
-    return Object.values(grouped);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch locations: ${response.status}`);
+      }
+
+      const locations: LocationData[] = await response.json();
+      setLocationData(locations);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching locations:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch locations');
+      // Fallback to mock data if API fails
+      setLocationData([]);
+    } finally {
+      setIsLoadingLocations(false);
+    }
+  };
+
+  // Fetch summary data
+  const fetchSummary = async () => {
+    try {
+      setIsLoadingSummary(true);
+      const response = await fetch('http://localhost:8081/api/summary', {
+        method: 'GET'
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch summary: ${response.status}`);
+      }
+
+      const summary: SummaryData = await response.json();
+      setSummaryData(summary);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching summary:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch summary');
+      // Fallback to mock data if API fails
+      setSummaryData({
+        totalReports: 0,
+        totalLocations: 0,
+        criticalArea: 'N/A',
+        reportsInCriticalArea: 0,
+        mostCommonResidueType: 'N/A',
+        mostCommonResidueQuantity: 0,
+      });
+    } finally {
+      setIsLoadingSummary(false);
+    }
+  };
+
+  // Fetch data on component mount
+  useEffect(() => {
+    fetchLocations();
+    fetchSummary();
   }, []);
 
-  // Calcular estatísticas gerais
-  const totalReports = wasteReports.length;
-  const totalLocations = locationData.length;
-  const typeStats = wasteReports.reduce((acc, report) => {
-    acc[report.type] = (acc[report.type] || 0) + 1;
-    return acc;
-  }, {} as { [key: string]: number });
-  
-  const mostReportedType = Object.entries(typeStats).reduce((a, b) => 
-    typeStats[a[0]] > typeStats[b[0]] ? a : b
-  )[0];
-
-  const locationWithMostReports = locationData.reduce((a, b) => 
-    a.totalReports > b.totalReports ? a : b
-  );
-
-  // Converter coordenadas lat/lon para posição 3D no globo
+  // Convert coordinates lat/lon to 3D position on globe
   const latLonToVector3 = (lat: number, lon: number, radius: number = 1) => {
     const phi = (90 - lat) * (Math.PI / 180);
     const theta = (lon + 180) * (Math.PI / 180);
@@ -224,9 +123,17 @@ const Dashboard: React.FC = () => {
     return new THREE.Vector3(x, y, z);
   };
 
-  // Inicializar Three.js
+  // Initialize Three.js scene
   useEffect(() => {
-    if (!mountRef.current) return;
+    if (!mountRef.current || locationData.length === 0) return;
+
+    // Clear existing points
+    pointsRef.current.forEach(point => {
+      if (globeRef.current) {
+        globeRef.current.remove(point);
+      }
+    });
+    pointsRef.current = [];
 
     // Scene
     const scene = new THREE.Scene();
@@ -251,11 +158,11 @@ const Dashboard: React.FC = () => {
     rendererRef.current = renderer;
 
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1); // luz geral uniforme
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1);
     scene.add(ambientLight);
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
-    directionalLight.position.set(5, 3, 5); // luz suave
+    directionalLight.position.set(5, 3, 5);
     scene.add(directionalLight);
 
     // Globe
@@ -265,52 +172,52 @@ const Dashboard: React.FC = () => {
 
     // Earth geometry and material
     const geometry = new THREE.SphereGeometry(1, 64, 64);
-  const textureLoader = new THREE.TextureLoader();
+    const textureLoader = new THREE.TextureLoader();
 
-  textureLoader.load(
-    'https://unpkg.com/three-globe/example/img/earth-day.jpg', // textura clara
-    (texture) => {
-      // Material claro, com volume suave
-      const material = new THREE.MeshStandardMaterial({
-        map: texture,
-        roughness: 0.8,   // superfície mais fosca
-        metalness: 0.1,   // pouco metalizado
-      });
+    textureLoader.load(
+      'https://unpkg.com/three-globe/example/img/earth-day.jpg',
+      (texture) => {
+        const material = new THREE.MeshStandardMaterial({
+          map: texture,
+          roughness: 0.8,
+          metalness: 0.1,
+        });
 
-      const earth = new THREE.Mesh(geometry, material);
-      globeGroup.add(earth);
+        const earth = new THREE.Mesh(geometry, material);
+        globeGroup.add(earth);
 
-      // Atmosfera sutil
-      const atmosphere = new THREE.Mesh(
-        new THREE.SphereGeometry(1.02, 64, 64),
-        new THREE.MeshBasicMaterial({
-          color: 0x87ceeb,
-          transparent: true,
-          opacity: 0.1,
-          side: THREE.BackSide,
-        })
-      );
-      globeGroup.add(atmosphere);
-    }
-  );
+        // Atmosphere
+        const atmosphere = new THREE.Mesh(
+          new THREE.SphereGeometry(1.02, 64, 64),
+          new THREE.MeshBasicMaterial({
+            color: 0x87ceeb,
+            transparent: true,
+            opacity: 0.1,
+            side: THREE.BackSide,
+          })
+        );
+        globeGroup.add(atmosphere);
+      }
+    );
 
-    // Add location points (agregados)
+    // Add location points from API data
     locationData.forEach((location) => {
       const typeColors: { [key: string]: number } = {
-      'Garrafas PET': 0xff4500,       // laranja
-      'Plásticos Descartáveis': 0xffff00, // amarelo
-      'Redes de Pesca': 0x00ff00,     // verde
-      'Microplásticos Visíveis': 0x00ffff, // ciano
-      'Outros': 0xff00ff               // rosa
-    };
+        'Garrafas PET': 0xff4500,
+        'Plásticos Descartáveis': 0xffff00,
+        'Redes de Pesca': 0x00ff00,
+        'Microplásticos Visíveis': 0x00ffff,
+        'Outros': 0xff00ff
+      };
+      
       const position = latLonToVector3(location.lat, location.lon, 1.02);
       
-      // Tamanho do ponto baseado no número de relatos
+      // Point size based on number of reports
       const pointSize = Math.max(0.02, Math.min(0.05, 0.02 + (location.totalReports * 0.008)));
       
       const pointGeometry = new THREE.SphereGeometry(pointSize, 16, 16);
       const pointMaterial = new THREE.MeshBasicMaterial({ 
-        color: typeColors[location.mostCommonType] || 0xffffff // branco se não definido
+        color: typeColors[location.mostCommonType] || 0xffffff
       });
       const point = new THREE.Mesh(pointGeometry, pointMaterial);
       
@@ -349,7 +256,6 @@ const Dashboard: React.FC = () => {
       if (intersects.length > 0) {
         const selectedPoint = intersects[0].object;
         setSelectedLocation(selectedPoint.userData as LocationData);
-        setAnalysis(''); // Reset analysis when selecting new location
       }
     };
 
@@ -391,27 +297,6 @@ const Dashboard: React.FC = () => {
     };
   }, [locationData]);
 
-  const generateAnalysis = async () => {
-    if (!selectedLocation) return;
-    
-    setIsAnalyzing(true);
-    
-    // Simular análise de IA baseada nos dados agregados
-    setTimeout(() => {
-      const analyses = [
-        `Análise Consolidada - ${selectedLocation.location}:\n\nEsta região apresenta ${selectedLocation.totalReports} relatos de poluição marinha, com predominância de "${selectedLocation.mostCommonType}". A concentração de resíduos indica possível fonte de poluição sistemática. Recomenda-se:\n\n• Monitoramento intensificado da área\n• Implementação de programas de limpeza regular\n• Identificação e controle das fontes de poluição\n• Engajamento da comunidade local para prevenção`,
-        
-        `Relatório de Impacto Regional - ${selectedLocation.location}:\n\nCom ${selectedLocation.totalReports} ocorrências registradas, esta área requer atenção prioritária. O tipo mais comum "${selectedLocation.mostCommonType}" representa ${Math.round((selectedLocation.typeDistribution[selectedLocation.mostCommonType] / selectedLocation.totalReports) * 100)}% dos casos.\n\nImpactos identificados:\n• Ameaça à fauna marinha local\n• Degradação do ecossistema costeiro\n• Possível impacto no turismo e pesca\n\nAções recomendadas: implementação de barreiras de contenção e programas educacionais.`,
-        
-        `Avaliação Ambiental Detalhada - ${selectedLocation.location}:\n\nAnálise de ${selectedLocation.totalReports} relatos revela padrão preocupante de poluição. A diversidade de tipos de resíduos (${Object.keys(selectedLocation.typeDistribution).length} categorias diferentes) sugere múltiplas fontes de contaminação.\n\nTendências observadas:\n• Concentração elevada de resíduos plásticos\n• Possível influência de correntes marítimas\n• Necessidade de intervenção coordenada\n\nRecomenda-se parceria entre órgãos ambientais, prefeitura e ONGs para ação efetiva.`
-      ];
-      
-      const randomAnalysis = analyses[Math.floor(Math.random() * analyses.length)];
-      setAnalysis(randomAnalysis);
-      setIsAnalyzing(false);
-    }, 2500);
-  };
-
   const formatDate = (timestamp: string) => {
     return new Date(timestamp).toLocaleDateString('pt-BR', {
       year: 'numeric',
@@ -423,6 +308,8 @@ const Dashboard: React.FC = () => {
   };
 
   const getDateRange = (reports: WasteReport[]) => {
+    if (!reports || reports.length === 0) return 'N/A';
+    
     const dates = reports.map(r => new Date(r.timestamp)).sort((a, b) => a.getTime() - b.getTime());
     const oldest = dates[0];
     const newest = dates[dates.length - 1];
@@ -433,6 +320,52 @@ const Dashboard: React.FC = () => {
     
     return `${oldest.toLocaleDateString('pt-BR')} - ${newest.toLocaleDateString('pt-BR')}`;
   };
+
+  // Loading state
+  if (isLoadingLocations || isLoadingSummary) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 size={48} className="animate-spin text-blue-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold mb-2">Carregando Dashboard</h2>
+          <p className="text-gray-400">
+            {isLoadingLocations && 'Carregando localizações...'}
+            {isLoadingSummary && 'Carregando estatísticas...'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error && locationData.length === 0 && !summaryData) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <AlertTriangle size={48} className="text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold mb-2">Erro ao Carregar Dados</h2>
+          <p className="text-gray-400 mb-4">{error}</p>
+          <div className="space-x-4">
+            <button
+              onClick={() => {
+                fetchLocations();
+                fetchSummary();
+              }}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            >
+              Tentar Novamente
+            </button>
+            <a 
+              href="/"
+              className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors inline-block"
+            >
+              Voltar ao Início
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -468,7 +401,9 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-400 text-sm">Total de Relatos</p>
-                <p className="text-2xl font-bold text-white">{totalReports}</p>
+                <p className="text-2xl font-bold text-white">
+                  {summaryData?.totalReports || 0}
+                </p>
               </div>
               <AlertTriangle size={32} className="text-red-400" />
             </div>
@@ -479,7 +414,9 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-400 text-sm">Localizações</p>
-                <p className="text-2xl font-bold text-white">{totalLocations}</p>
+                <p className="text-2xl font-bold text-white">
+                  {summaryData?.totalLocations || locationData.length}
+                </p>
               </div>
               <MapPin size={32} className="text-blue-400" />
             </div>
@@ -490,8 +427,12 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-400 text-sm">Tipo Mais Comum</p>
-                <p className="text-lg font-bold text-white">{mostReportedType}</p>
-                <p className="text-sm text-gray-400">{typeStats[mostReportedType]} ocorrências</p>
+                <p className="text-lg font-bold text-white">
+                  {summaryData?.mostCommonResidueType || 'N/A'}
+                </p>
+                <p className="text-sm text-gray-400">
+                  {summaryData?.mostCommonResidueQuantity || 0} ocorrências
+                </p>
               </div>
               <Package size={32} className="text-orange-400" />
             </div>
@@ -502,8 +443,12 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-400 text-sm">Área Crítica</p>
-                <p className="text-lg font-bold text-white">{locationWithMostReports.location.split(',')[0]}</p>
-                <p className="text-sm text-gray-400">{locationWithMostReports.totalReports} relatos</p>
+                <p className="text-lg font-bold text-white">
+                  {summaryData?.criticalArea?.split(',')[0] || 'N/A'}
+                </p>
+                <p className="text-sm text-gray-400">
+                  {summaryData?.reportsInCriticalArea || 0} relatos
+                </p>
               </div>
               <TrendingUp size={32} className="text-red-400" />
             </div>
@@ -511,23 +456,43 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Distribuição por Tipo */}
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold mb-3">Distribuição por Tipo de Resíduo</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-            {Object.entries(typeStats).map(([type, count]) => (
-              <div key={type} className="bg-gray-700 p-3 rounded-lg text-center">
-                <p className="text-sm text-gray-400">{type}</p>
-                <p className="text-xl font-bold text-white">{count}</p>
-                <div className="w-full bg-gray-600 rounded-full h-2 mt-2">
-                  <div 
-                    className="bg-orange-500 h-2 rounded-full" 
-                    style={{ width: `${(count / totalReports) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
-            ))}
+{locationData.length > 0 && (
+  <div className="mt-6 w-full px-0">
+    <h3 className="text-lg font-semibold mb-3">Distribuição por Tipo de Resíduo</h3>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 w-full">
+      {Object.entries(
+        locationData.reduce((acc, location) => {
+          Object.entries(location.typeDistribution).forEach(([type, count]) => {
+            acc[type] = (acc[type] || 0) + count;
+          });
+          return acc;
+        }, {} as Record<string, number>)
+      ).map(([type, count], _, arr) => {
+        const totalReports = Object.values(
+          locationData.reduce((acc, location) => {
+            Object.entries(location.typeDistribution).forEach(([t, c]) => {
+              acc[t] = (acc[t] || 0) + c;
+            });
+            return acc;
+          }, {} as Record<string, number>)
+        ).reduce((sum, c) => sum + c, 0);
+
+        return (
+          <div key={type} className="bg-gray-700 p-3 rounded-lg text-center w-full">
+            <p className="text-sm text-gray-400">{type}</p>
+            <p className="text-xl font-bold text-white">{count}</p>
+            <div className="w-full bg-gray-600 rounded-full h-2 mt-2">
+              <div
+                className="bg-orange-500 h-2 rounded-full"
+                style={{ width: `${totalReports > 0 ? (count / totalReports) * 100 : 0}%` }}
+              />
+            </div>
           </div>
-        </div>
+        );
+      })}
+    </div>
+  </div>
+)}
       </div>
 
       {/* Main Content */}
@@ -597,13 +562,15 @@ const Dashboard: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center">
-                    <Calendar className="mr-3 text-green-500" size={20} />
-                    <div>
-                      <p className="text-sm text-gray-400">Período dos Relatos</p>
-                      <p className="font-semibold text-sm">{getDateRange(selectedLocation.reports)}</p>
+                  {selectedLocation.reports && (
+                    <div className="flex items-center">
+                      <Calendar className="mr-3 text-green-500" size={20} />
+                      <div>
+                        <p className="text-sm text-gray-400">Período dos Relatos</p>
+                        <p className="font-semibold text-sm">{getDateRange(selectedLocation.reports)}</p>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Distribuição de Tipos */}
                   <div className="bg-gray-700 p-3 rounded-lg">
@@ -638,7 +605,7 @@ const Dashboard: React.FC = () => {
             <ul className="text-sm text-gray-300 space-y-1">
               <li>• Arraste para rotacionar o globo</li>
               <li>• Use a roda do mouse para zoom</li>
-              <li>• Clique nos pontos laranja para ver dados regionais</li>
+              <li>• Clique nos pontos coloridos para ver dados regionais</li>
               <li>• Pontos maiores = mais relatos na região</li>
             </ul>
           </div>
