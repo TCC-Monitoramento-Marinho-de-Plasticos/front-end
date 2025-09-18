@@ -52,7 +52,7 @@ const Dashboard: React.FC = () => {
   const fetchLocations = async () => {
     try {
       setIsLoadingLocations(true);
-      const response = await fetch('http://localhost:8081/api/locations', {
+      const response = await fetch('http://44.215.6.82:8081/api/locations', {
         method: 'GET'
       });
 
@@ -77,7 +77,7 @@ const Dashboard: React.FC = () => {
   const fetchSummary = async () => {
     try {
       setIsLoadingSummary(true);
-      const response = await fetch('http://localhost:8081/api/summary', {
+      const response = await fetch('http://44.215.6.82:8081/api/summary', {
         method: 'GET'
       });
 
