@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { AnalysisResult } from '../types';
 
 // API endpoints with fallback
-const PRIMARY_API_URL = 'http://3.225.100.118:8081/api/predict';
+const PRIMARY_API_URL = 'http://44.215.6.82:8081/api/predict';
 const FALLBACK_API_URL = 'http://localhost:8081/api/predict';
 
 export const useImageProcessing = () => {
