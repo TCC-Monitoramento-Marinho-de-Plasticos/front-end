@@ -98,7 +98,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, isLoading }) =>
                   </h3>
                   <p className="text-ocean-600 dark:text-ocean-400">
                     {result.plasticDetected 
-                      ? `Confiança: ${(result.confidence * 100).toFixed(1)}%`
+                      ? 'Nosso sistema identificou plástico nesta imagem'
                       : 'Esta imagem parece estar livre de poluição'}
                   </p>
                   {result.location && (
