@@ -64,7 +64,7 @@ const Dashboard: React.FC = () => {
   const fetchLocations = async () => {
     try {
       setIsLoadingLocations(true);
-      const res = await fetch('http://localhost:8081/api/locations');
+      const res = await fetch('http://44.215.6.82:8081/api/locations');
       if (!res.ok) throw new Error(`Failed to fetch locations (${res.status})`);
       const data: LocationData[] = await res.json();
       setLocationData(data);
@@ -81,7 +81,7 @@ const Dashboard: React.FC = () => {
   const fetchSummary = async () => {
     try {
       setIsLoadingSummary(true);
-      const res = await fetch('http://localhost:8081/api/summary');
+      const res = await fetch('http://44.215.6.82:8081/api/summary');
       if (!res.ok) throw new Error(`Failed to fetch summary (${res.status})`);
       const data: SummaryData = await res.json();
       setSummaryData(data);
