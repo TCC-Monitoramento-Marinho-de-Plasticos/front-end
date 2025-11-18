@@ -542,12 +542,6 @@ const Dashboard: React.FC = () => {
                   <p className="text-lg font-semibold">{selectedLocation.totalReports}</p>
                 </div>
 
-                <div>
-                  <p className="text-xs text-white/60">Tipo Mais Comum</p>
-                  <p className="font-semibold">{selectedLocation.mostCommonType}</p>
-                  <p className="text-xs text-white/60">{selectedLocation.typeDistribution[selectedLocation.mostCommonType] ?? 0} de {selectedLocation.totalReports}</p>
-                </div>
-
                 {selectedLocation.reports && (
                   <div>
                     <p className="text-xs text-white/60">Período dos relatos</p>
