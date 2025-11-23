@@ -25,6 +25,14 @@ interface LocationData {
   typeDistribution: { [key: string]: number };
 }
 
+interface LocationSummary {
+  location: string;
+  withResidue: number;
+  withoutResidue: number;
+  allImages: string[];
+  selectedImage: string;
+}
+
 interface SummaryData {
   totalReports: number;
   totalLocations: number;
@@ -37,6 +45,7 @@ interface SummaryData {
   changeRate: number;
   totalCleanReports: number;
   totalDirtyReports: number;
+  dirtyChangeRate: number;
 }
 
 const Dashboard: React.FC = () => {
@@ -56,15 +65,17 @@ const Dashboard: React.FC = () => {
   const [locationData, setLocationData] = useState<LocationData[]>([]);
   const [summaryData, setSummaryData] = useState<SummaryData | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(null);
+  const [locationSummary, setLocationSummary] = useState<LocationSummary | null>(null);
   const [isLoadingLocations, setIsLoadingLocations] = useState(true);
   const [isLoadingSummary, setIsLoadingSummary] = useState(true);
+  const [isLoadingLocationSummary, setIsLoadingLocationSummary] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // ---------- Fetches ----------
   const fetchLocations = async () => {
     try {
       setIsLoadingLocations(true);
-      const res = await fetch('http://44.215.6.82:8081/api/locations');
+      const res = await fetch('http://localhost:8081/api/locations');
       if (!res.ok) throw new Error(`Failed to fetch locations (${res.status})`);
       const data: LocationData[] = await res.json();
       setLocationData(data);
@@ -81,7 +92,7 @@ const Dashboard: React.FC = () => {
   const fetchSummary = async () => {
     try {
       setIsLoadingSummary(true);
-      const res = await fetch('http://44.215.6.82:8081/api/summary');
+      const res = await fetch('http://localhost:8081/api/summary');
       if (!res.ok) throw new Error(`Failed to fetch summary (${res.status})`);
       const data: SummaryData = await res.json();
       setSummaryData(data);
@@ -100,10 +111,27 @@ const Dashboard: React.FC = () => {
         trendMap: {},
         changeRate: 0,
         totalCleanReports: 0,
-        totalDirtyReports: 0
+        totalDirtyReports: 0,
+        dirtyChangeRate: 0
       });
     } finally {
       setIsLoadingSummary(false);
+    }
+  };
+
+  const fetchLocationSummary = async (location: string) => {
+    try {
+      setIsLoadingLocationSummary(true);
+      const encodedLocation = encodeURIComponent(location);
+      const res = await fetch(`http://localhost:8081/api/location-summary/${encodedLocation}`);
+      if (!res.ok) throw new Error(`Failed to fetch location summary (${res.status})`);
+      const data: LocationSummary = await res.json();
+      setLocationSummary(data);
+    } catch (err) {
+      console.error('Error fetching location summary:', err);
+      setLocationSummary(null);
+    } finally {
+      setIsLoadingLocationSummary(false);
     }
   };
 
@@ -275,7 +303,10 @@ const Dashboard: React.FC = () => {
       if (intersects.length > 0) {
         const obj = intersects[0].object;
         const payload: LocationData | undefined = (obj.userData as any).payload;
-        if (payload) setSelectedLocation(payload);
+        if (payload) {
+          setSelectedLocation(payload);
+          fetchLocationSummary(payload.location);
+        }
       }
     };
 
@@ -448,26 +479,38 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Card 6: Weekly Change */}
+          {/* Card 6: Variação Semanal de Relatos com Lixo */}
           <div className="bg-gradient-to-br from-[#081623] to-[#071220] p-5 rounded-2xl shadow-lg transform hover:-translate-y-1 transition">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-white/60">Variação Semanal</p>
-                <p className="text-3xl font-bold mt-2 text-blue-300">{summaryData?.changeRate ?? 0}%</p>
-                <p className="text-xs text-white/60 mt-2">Comparação com semana anterior</p>
+                <p className="text-sm text-white/60">Variação Semanal de Relatos com Lixo</p>
+                <p className="text-3xl font-bold mt-2 text-red-400">
+                  {summaryData?.dirtyChangeRate?.toFixed(1) ?? 0}%
+                </p>
+                <p className="text-xs text-white/60 mt-2">
+                  Comparação com a semana anterior
+                </p>
               </div>
-              <div className="bg-gradient-to-br from-[#60a5fa] to-[#3b82f6] p-3 rounded-lg shadow-md">
+              <div className="bg-gradient-to-br from-[#f87171] to-[#ef4444] p-3 rounded-lg shadow-md">
                 <TrendingUp size={28} className="text-white" />
               </div>
             </div>
-            {/* small sparkline */}
+
+            {/* sparkline */}
             <div className="mt-4">
               <svg viewBox={spark.viewBox} width="100%" height="34" className="opacity-90">
-                <path d={spark.path} fill="none" stroke="#60a5fa" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-                {/* optional area under the curve */}
+                <path
+                  d={spark.path}
+                  fill="none"
+                  stroke="#f87171"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </div>
           </div>
+
 
           {/* Card 7: Clean Reports */}
           <div className="bg-gradient-to-br from-[#081623] to-[#071220] p-5 rounded-2xl shadow-lg transform hover:-translate-y-1 transition">
@@ -522,8 +565,32 @@ const Dashboard: React.FC = () => {
 
           {selectedLocation && (
             <div>
-              <div className="mb-4">
-                <img src="https://placehold.co/800x400/111827/9CA3AF?text=Foto+da+região" alt="região" className="w-full rounded-lg" />
+              <div className="mb-4 relative">
+                {isLoadingLocationSummary ? (
+                  <div className="w-full h-48 bg-[#111827] rounded-lg flex items-center justify-center">
+                    <Loader2 size={32} className="animate-spin text-white/60" />
+                  </div>
+                ) : locationSummary?.selectedImage ? (
+                  <div>
+                    <img
+                      src={locationSummary.selectedImage}
+                      alt={`Imagem de ${selectedLocation.location}`}
+                      className="w-full rounded-lg object-cover max-h-64"
+                    />
+                    <div className="mt-2 flex items-center justify-between text-xs text-white/60">
+                      <span>
+                        {locationSummary.withResidue > locationSummary.withoutResidue
+                          ? '🔴 Área com resíduos detectados'
+                          : '🟢 Área limpa'}
+                      </span>
+                      <span>{locationSummary.withResidue}/{locationSummary.withResidue + locationSummary.withoutResidue} com resíduo</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full h-48 bg-[#111827] rounded-lg flex items-center justify-center">
+                    <p className="text-white/40 text-sm">Nenhuma imagem disponível</p>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-3">

@@ -5,6 +5,8 @@ import { AnalysisResult } from '../types';
 // API endpoints with fallback
 const PRIMARY_API_URL = 'http://44.215.6.82:8081/api/predict';
 const FALLBACK_API_URL = 'http://localhost:8081/api/predict';
+const UPLOAD_API_URL = 'http://44.215.6.82:8081/api/images/upload';
+const FALLBACK_UPLOAD_API_URL = 'http://localhost:8081/api/images/upload';
 
 export const useImageProcessing = () => {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -26,10 +28,15 @@ export const useImageProcessing = () => {
       const blob = await response.blob();
       const file = new File([blob], 'image.jpg', { type: blob.type });
 
-      // Montar form data
+      // Montar form data para predição
       const formData = new FormData();
       formData.append('file', file);
       formData.append('localization', location);
+
+      // Montar form data para upload (separado para uso paralelo)
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', file);
+      uploadFormData.append('location', location);
 
       let apiResponse;
       let usedFallback = false;
@@ -97,6 +104,12 @@ export const useImageProcessing = () => {
         },
       };
 
+      // Upload da imagem para o Firebase (em paralelo, não bloqueia o resultado)
+      uploadImageToFirebase(uploadFormData, location, usedFallback).catch((uploadError) => {
+        console.warn('Failed to upload image to Firebase:', uploadError);
+        // Não mostra erro ao usuário, pois o upload é secundário
+      });
+
       // Feedback
       if (usedFallback) {
         toast.success('Análise concluída (usando servidor local)');
@@ -119,4 +132,37 @@ export const useImageProcessing = () => {
   }, []);
 
   return { isProcessing, result, error, processImage };
+};
+
+// Função auxiliar para upload de imagem ao Firebase
+const uploadImageToFirebase = async (
+  formData: FormData,
+  location: string,
+  useFallback: boolean = false
+): Promise<string> => {
+  const apiUrl = useFallback ? FALLBACK_UPLOAD_API_URL : UPLOAD_API_URL;
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      body: formData,
+      credentials: 'include', // Mantém JSESSIONID
+    });
+
+    if (!response.ok) {
+      // Se a API primária falhar, tenta a fallback
+      if (!useFallback) {
+        console.warn('Primary upload API failed, trying fallback');
+        return uploadImageToFirebase(formData, location, true);
+      }
+      throw new Error(`Upload failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('Image uploaded to Firebase:', data.url);
+    return data.url;
+  } catch (error) {
+    console.error('Error uploading image to Firebase:', error);
+    throw error;
+  }
 };
