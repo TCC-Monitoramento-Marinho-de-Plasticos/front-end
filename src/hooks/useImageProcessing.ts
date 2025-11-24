@@ -6,7 +6,7 @@ import { AnalysisResult } from '../types';
 const PRIMARY_API_URL = 'http://44.215.6.82:8081/api/predict';
 const FALLBACK_API_URL = 'http://localhost:8081/api/predict';
 const UPLOAD_API_URL = 'http://44.215.6.82:8081/api/images/upload';
-const FALLBACK_UPLOAD_API_URL = 'http://localhost:8081/api/images/upload';
+const FALLBACK_UPLOAD_API_URL = 'http://44.215.6.82:8081/api/images/upload';
 
 export const useImageProcessing = () => {
   const [isProcessing, setIsProcessing] = useState(false);
