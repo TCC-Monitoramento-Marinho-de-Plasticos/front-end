@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { AlertTriangle, CheckCircle, Share2, MapPin } from 'lucide-react';
 import { AnalysisResult } from '../types';
 import MarineStats from './MarineStats';
+import { useAnalysisMessage } from '../hooks/useAnalysisMessage';
 
 interface ResultsDisplayProps {
   result: AnalysisResult | null;
@@ -10,6 +11,10 @@ interface ResultsDisplayProps {
 }
 
 const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, isLoading }) => {
+
+  // Gerar texto dinâmico baseado no resultado
+  const message = useAnalysisMessage(result?.plasticDetected ?? null);
+
   if (isLoading) {
     return (
       <div className="mt-10 flex flex-col items-center justify-center">
@@ -40,6 +45,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, isLoading }) =>
     >
       <div className="bg-white dark:bg-ocean-800 rounded-xl shadow-lg overflow-hidden">
         <div className="p-6">
+          
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-heading font-bold text-ocean-800 dark:text-white">
               Resultados da Análise
@@ -54,6 +60,8 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, isLoading }) =>
           </div>
 
           <div className="flex flex-col md:flex-row gap-6">
+            
+            {/* Imagem */}
             <div className="flex-1">
               <div className="relative rounded-lg overflow-hidden">
                 <img 
@@ -82,8 +90,11 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, isLoading }) =>
                 )}
               </div>
             </div>
-            
+
+            {/* Informações */}
             <div className="flex-1">
+              
+              {/* Indicador principal */}
               <div className="mb-6 flex items-center">
                 <div className={`p-3 rounded-full ${result.plasticDetected ? 'bg-coral-100 dark:bg-coral-900/30 text-coral-600 dark:text-coral-400' : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'} mr-4`}>
                   {result.plasticDetected ? (
@@ -92,6 +103,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, isLoading }) =>
                     <CheckCircle size={28} />
                   )}
                 </div>
+
                 <div>
                   <h3 className="font-heading font-bold text-xl text-ocean-800 dark:text-white">
                     {result.plasticDetected ? 'Plástico Detectado' : 'Nenhum Plástico Detectado'}
@@ -101,6 +113,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, isLoading }) =>
                       ? 'Nosso sistema identificou plástico nesta imagem'
                       : 'Esta imagem parece estar livre de poluição'}
                   </p>
+
                   {result.location && (
                     <div className="flex items-center mt-1 text-sm text-ocean-500 dark:text-ocean-400">
                       <MapPin size={14} className="mr-1" />
@@ -109,21 +122,21 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, isLoading }) =>
                   )}
                 </div>
               </div>
-              
+
+              {/* Resumo com texto aleatório */}
               <div className="bg-ocean-50 dark:bg-ocean-700/30 p-4 rounded-lg mb-6">
                 <h4 className="font-heading font-medium text-ocean-700 dark:text-ocean-300 mb-2">
                   Resumo da Análise
                 </h4>
                 <p className="text-ocean-600 dark:text-ocean-400 text-sm">
-                  {result.plasticDetected 
-                    ? "Nosso sistema identificou possível poluição plástica nesta imagem submarina. As áreas destacadas mostram onde podem existir detritos plásticos. Este tipo de poluição representa ameaças significativas aos ecossistemas marinhos."
-                    : "Este ambiente submarino parece estar livre de poluição plástica visível. Ecossistemas marinhos saudáveis são vitais para a biodiversidade oceânica e a saúde do planeta."}
+                  {message}
                 </p>
               </div>
-              
+
               <MarineStats />
             </div>
           </div>
+
         </div>
       </div>
     </motion.div>
