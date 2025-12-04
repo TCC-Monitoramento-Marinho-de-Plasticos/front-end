@@ -469,9 +469,9 @@ const Dashboard: React.FC = () => {
           <div className="bg-gradient-to-br from-[#081623] to-[#071220] p-5 rounded-2xl shadow-lg transform hover:-translate-y-1 transition">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-white/60">Taxa de Resíduos</p>
+                <p className="text-sm text-white/60">Porcentagem de relatos com resíduo</p>
                 <p className="text-3xl font-bold mt-2 text-red-400">{formatPercent(summaryData?.residueRate)}</p>
-                <p className="text-xs text-white/60 mt-2">Porcentagem de relatos com resíduo</p>
+                <p className="text-xs text-white/60 mt-2">Taxa de Resíduos</p>
               </div>
               <div className="bg-gradient-to-br from-[#ff6b6b] to-[#ff3d3d] p-3 rounded-lg shadow-md">
                 <Circle size={28} className="text-white" />
